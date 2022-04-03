@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+model Users {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  username String
+
+  email String @unique
+
+  password String
+
+  status String @default("active")
+
+  Products Products[]
+
+  Orders Orders[]
+
+  Carts Carts[]
+}
+
+model Products {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  title String
+
+  description String
+
+  quantity Int
+
+  price Int
+
+  status String @default("active")
+
+  UserId Int
+
+  Users Users @relation(fields: [UserId], references: [id])
+
+  ProductsInCart ProductsInCart[]
+}
+
+model ProductsInCart {
+
+  CartId Int
+
+  PorductId Int
+
+  quantity Int
+
+  status String @default("active")
+
+  Products Products @relation(fields: [PorductId], references: [id])
+
+  Carts Carts @relation(fields: [CartId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  @@id([PorductId, CartId])
+}
+
+model Carts {
+  id Int @id @default(autoincrement())
+
+  UserId Int
+
+  status String @default("active")
+
+  Users Users @relation(fields: [UserId], references: [id])
+
+  ProductsInCart ProductsInCart[]
+
+  Orders Orders[]
+
+  createdAt DateTime @default(now())
+
+  updateAt DateTime @updatedAt
+
+}
+
+model Orders {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  userId Int
+
+  cartid Int
+
+  issuedAt  DateTime @default(now())
+
+  totalPrice Int
+
+  Users Users @relation(fields: [userId], references: [id])
+
+  Carts Carts @relation(fields: [cartid], references: [id])
+
+  status String @default("active")
+
+}
